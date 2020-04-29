@@ -1,0 +1,148 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  become: true
+
+  tasks:
+  - name: Update and install latest packages
+    apt:
+      upgrade: dist
+      update_cache: yes
+
+  - name: Install NodeJS
+    shell: curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+  - name: Install Syncting
+    block:
+      - name: Add Syncthing Key
+        apt_key: url=https://syncthing.net/release-key.txt
+      - name: Add Sycnthing APT repository
+        apt_repository:
+          repo: deb https://apt.syncthing.net/ syncthing stable
+      - name: Install Syncthing
+        apt:
+          name: syncthing
+          update_cache: yes
+        
+  - name: Install Spotify
+    block:
+      - name: Add Spotify Key
+        apt_key: url=https://download.spotify.com/debian/pubkey.gpg
+      - name: Add Spotify APT repository
+        apt_repository:
+          repo: deb http://repository.spotify.com stable non-free
+      - name: Install Spotify
+        apt:
+          name: spotify-client
+          update_cache: yes 
+
+  - name: Install git
+    apt:
+      name: git
+  - name: Install tmux
+    apt:
+      name: tmux
+  - name: Install ffmpeg
+    apt:
+      name: ffmpeg
+  - name: Install vim
+    apt:
+      name: vim
+  - name: Install htop
+    apt:
+      name: htop
+  - name: Install fish
+    apt:
+      name: fish
+  - name: Install nodejs
+    apt:
+      name: nodejs
+  - name: Install haskell-platform
+    apt:
+      name: haskell-platform
+  - name: Install keepassxc
+    apt:
+      name: keepassxc
+  - name: Install krita
+    apt:
+      name: krita
+  - name: Install peek
+    apt:
+      name: peek
+  - name: Install xclip
+    apt:
+      name: xclip
+  - name: Install ncdu
+    apt:
+      name: ncdu
+  - name: Install bat
+    apt:
+      name: bat
+  - name: Install pdfgrep
+    apt:
+      name: pdfgrep
+  - name: Install fd-find
+    apt:
+      name: fd-find
+  - name: Install ripgrep
+    apt:
+      name: ripgrep
+
+  - name: Install tldr
+    shell: npm install -g tldr
+
+  - name: Install Discord
+    apt:
+      deb: https://discordapp.com/api/download?platform=linux&format=deb
+  - name: Install Dropbox
+    apt:
+      deb: https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2020.03.04_amd64.deb
+  - name: Install VSCode
+    apt:
+      deb: https://go.microsoft.com/fwlink/?LinkID=760868
+  - name: Install Skype
+    apt:
+      deb: https://go.skype.com/skypeforlinux-64.deb
+  - name: Install Chrome
+    apt:
+      deb: https://www.google.com/chrome/thank-you.html?installdataindex=empty&statcb=0&defaultbrowser=0#
+  - name: Install Stretchly
+    apt:
+      deb: https://github.com/hovancik/stretchly/releases/download/v0.21.1/stretchly_0.21.1_amd64.deb
+
+  - name: Install Anaconda
+    block:
+      - name: Download Anaconda
+        get_url:
+          url: https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+          dest: /tmp/install-anaconda.sh
+      - name: Run the Anaconda installer
+        shell: bash /tmp/install-anaconda.sh -b -p $HOME/anaconda3 && $HOME/anaconda3/bin/conda init
+
+  - name: Install Docker
+    block:
+      - name: Install Docker prerequisites
+        apt:
+          name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg2','software-properties-common']
+          update_cache: yes
+      - name: Add Docker GPG Key
+        apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+      - name: Add Docker APT repository
+        apt_repository:
+          repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+      - name: Install Docker
+        apt:
+          name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+          update_cache: yes
+      - name: Install Docker-compose 
+        shell: curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+
+
+  - name: Install Rust
+    block:
+      - name: Curl rust
+        shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/rustup.sh
+      - name: Install rust
+        shell: sh /tmp/rustup.sh -y
+
+  - name: Install Exa
+    shell: source $HOME/.cargo/env && cargo install --no-default-features exa
